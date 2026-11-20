@@ -4,12 +4,11 @@
 {
     "name": "Block Module Install",
     "summary": "Block module install, upgrade and uninstall from HTTP requests",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Tools",
     "author": "Trobz, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/server-tools",
     "license": "AGPL-3",
-    "depends": ["base"],
+    "depends": ["base", "rpc"],
     "installable": True,
-    "post_load": "post_load",
 }

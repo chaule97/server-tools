@@ -7,12 +7,11 @@ import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from odoo import http
 from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 from odoo.tools import config
 
-from .. import hooks
+from ..controllers import rpc
 from ..models import ir_module_module
 from .common import ModuleBlockInstallCommon
 
@@ -160,11 +159,10 @@ class TestModuleBlockInstall(ModuleBlockInstallCommon, TransactionCase):
             self.assertEqual(ir_module_module._get_config(), {})
             self.assertTrue(ir_module_module._is_blocking_enabled())
 
-    def test_borrowed_request_blocked(self):
-        """``dispatch_rpc`` borrows the request: it is still an HTTP call."""
-        self.assertTrue(getattr(http.borrow_request, "_module_block_install", False))
+    def test_rpc_request_blocked(self):
+        """``dispatch_rpc`` unbinds the request: it is still an HTTP call."""
         fake = _fake_request()
-        token = hooks.borrowed_request.set(fake)
+        token = rpc.rpc_request.set(fake)
         try:
             with patch.object(ir_module_module, "request", None):
                 self.assertIs(ir_module_module._get_http_request(), fake)
@@ -174,10 +172,5 @@ class TestModuleBlockInstall(ModuleBlockInstallCommon, TransactionCase):
                 ):
                     self.mod_uninstalled.button_install()
         finally:
-            hooks.borrowed_request.reset(token)
+            rpc.rpc_request.reset(token)
         self.assertEqual(self.mod_uninstalled.state, "uninstalled")
-
-    def test_patch_borrow_request_idempotent(self):
-        patched = http.borrow_request
-        hooks._patch_borrow_request()
-        self.assertIs(http.borrow_request, patched)

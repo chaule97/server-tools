@@ -38,7 +38,7 @@ class TestModuleBlockInstallHttp(ModuleBlockInstallCommon, HttpCase):
         self.assertEqual(error.exception.args[0], "odoo.exceptions.UserError")
         self.assertEqual(self.mod_uninstalled.state, "uninstalled")
 
-    # /xmlrpc/2 and /jsonrpc run the call inside ``borrow_request()``, which
+    # /xmlrpc/2 and /jsonrpc run the call through ``dispatch_rpc``, which
     # unbinds ``odoo.http.request``: they must be blocked all the same.
 
     @mute_logger("odoo.http", "odoo.addons.rpc.controllers.xmlrpc")

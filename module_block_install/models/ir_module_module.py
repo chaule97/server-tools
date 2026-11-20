@@ -11,7 +11,7 @@ from odoo.http import request
 from odoo.tools import config
 from odoo.tools.misc import str2bool
 
-from ..hooks import borrowed_request
+from ..controllers.rpc import rpc_request
 
 _logger = logging.getLogger(__name__)
 
@@ -79,11 +79,12 @@ def _get_http_request():
     """The HTTP request being served, if any.
 
     ``odoo.http.request`` is unbound while ``dispatch_rpc`` runs an
-    ``/xmlrpc`` or ``/jsonrpc`` call: fall back on the request it borrowed.
+    ``/xmlrpc`` or ``/jsonrpc`` call: fall back on the request remembered by
+    the RPC controller.
     """
     if request:
         return request
-    return borrowed_request.get()
+    return rpc_request.get()
 
 
 def _is_allowed_address(remote_addr):
